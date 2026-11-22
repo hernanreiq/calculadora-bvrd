@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de productos de inversión · Bolsa de Valores de la República Dominicana</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#eef2f7; --surface:#ffffff; --ink:#0f1f33; --muted:#5b6b7f; --line:#d9e1ec;
+  --accent:#1d5fd1; --accent-ink:#ffffff; --disc:#0f7a4a; --prem:#b45309; --field:#f6f8fb;
+  --hero1:#0a2342; --hero2:#17407a; --hero-ink:#f2f6fc; --hero-muted:#b4c7e3; --shadow:0 10px 30px rgba(10,35,66,.10);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1220; --surface:#111c30; --ink:#e6edf7; --muted:#92a3bb; --line:#24334d;
+    --accent:#6ea4ff; --accent-ink:#06142b; --disc:#4ade9b; --prem:#f2a65a; --field:#0d1729;
+    --hero1:#0c1c36; --hero2:#14305a; --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1220; --surface:#111c30; --ink:#e6edf7; --muted:#92a3bb; --line:#24334d;
+  --accent:#6ea4ff; --accent-ink:#06142b; --disc:#4ade9b; --prem:#f2a65a; --field:#0d1729;
+  --hero1:#0c1c36; --hero2:#14305a; --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+header.top{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:var(--hero-ink)}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:1.05rem}
+.logo{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.bar a{display:inline-flex;align-items:center;gap:8px;color:var(--hero-ink);font-size:.9rem;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:8px 16px;border-radius:99px}
+.bar a:hover{background:rgba(255,255,255,.1)}
+.hero{padding:44px 0 84px;max-width:760px}
+h1{font-size:clamp(2rem,4.2vw,3.1rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.03em}
+.hero p{margin:0;color:var(--hero-muted);font-size:1.1rem;max-width:62ch}
+main{margin-top:-52px;padding-bottom:40px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.wrap{padding:0 16px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow)}
+.panel h2{font-size:1.1rem;margin:0 0 18px}
+.res{position:sticky;top:20px}
+label,.lbl{display:block;font-size:.875rem;font-weight:500;margin:0 0 5px}
+.f{margin-bottom:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+input[type=number],input[type=date],select{width:100%;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-weight:500;padding:11px;border:0;background:var(--field);color:var(--muted);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
+.hint{font-size:.82rem;color:var(--muted);margin:5px 0 0}
+.cap{color:var(--muted);font-size:.875rem;margin:0 0 2px}
+.price{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:700;letter-spacing:-.03em;line-height:1.05;margin:0 0 10px}
+.tag{display:inline-block;font-weight:600;font-size:.92rem;padding:4px 12px;border-radius:99px;border:1px solid currentColor}
+.tag.disc{color:var(--disc)} .tag.prem{color:var(--prem)} .tag.par{color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:22px;font-size:.95rem}
+th,td{text-align:right;padding:11px 6px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+th{font-weight:600;color:var(--muted);font-size:.85rem}
+.note{font-size:.84rem;color:var(--muted);margin:14px 0 0}
+.err{color:var(--prem);font-weight:500}
+.how{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:860px){.how{grid-template-columns:1fr}}
+.how h3{margin:0 0 6px;font-size:1rem}
+.how p{margin:0;color:var(--muted);font-size:.92rem}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:var(--ink)}
+.disc-box{margin-top:24px;border:1px solid var(--line);border-left:4px solid var(--prem);background:var(--surface);border-radius:4px 14px 14px 4px;padding:18px 22px;box-shadow:var(--shadow)}
+.disc-box h2{font-size:1rem;margin:0 0 6px}
+.disc-box p{margin:0;font-size:.92rem;color:var(--muted);max-width:90ch}
+footer{border-top:1px solid var(--line);padding:22px 0 32px;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+footer a{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;text-decoration:none}
+footer a:hover{text-decoration:underline}
+footer svg{flex:none}
+.chip{display:inline-flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <div class="brand"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>Bolsa de Valores · República Dominicana</div>
+      <a href="https://github.com/hernanreiq" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+    </div>
+    <div class="hero">
+      <h1>Calculadora de productos de inversión de la bolsa de valores</h1>
+      <p>Para productos de la Bolsa de Valores de la República Dominicana. Ingresa los datos del boletín de tu puesto de bolsa y obtén el precio, la prima o el descuento y el rendimiento, con y sin ISR.</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <section class="panel" aria-label="Datos del producto">
+      <h2>Datos del producto</h2>
+      <div class="row">
+        <div class="f"><label for="moneda">Moneda</label>
+          <select id="moneda"><option value="RD$">Pesos (RD$)</option><option value="US$">Dólares (US$)</option></select></div>
+        <div class="f"><label for="nominal">Valor nominal (inversión mínima)</label>
+          <input id="nominal" type="number" min="0" step="any" value="100000" inputmode="decimal"></div>
+      </div>
+      <div class="row">
+        <div class="f"><label for="cupon">Tasa cupón (%)</label>
+          <input id="cupon" type="number" min="0" step="any" value="11.25" inputmode="decimal"></div>
+        <div class="f"><label for="rend">Tasa de rendimiento (%)</label>
+          <input id="rend" type="number" min="0" step="any" value="8.50" inputmode="decimal"></div>
+      </div>
+      <div class="f"><label for="freq">Frecuencia de pago</label>
+        <select id="freq">
+          <option value="2" selected>Semestral</option><option value="12">Mensual</option>
+          <option value="4">Trimestral</option><option value="1">Anual</option>
+        </select></div>
+      <div class="f"><span class="lbl">Fórmula de precio</span>
+        <div class="seg" role="group" aria-label="Fórmula de precio">
+          <button type="button" id="b-simple" aria-pressed="true">Simple</button>
+          <button type="button" id="b-full" aria-pressed="false">Completa</button>
+        </div>
+        <p class="hint" id="fhint"></p></div>
+      <div class="f" id="vwrap" hidden><label for="venc">Fecha de vencimiento</label>
+        <input id="venc" type="date"></div>
+    </section>
+
+    <section class="panel res" aria-live="polite" aria-label="Resultados">
+      <h2>Resultado</h2>
+      <p class="cap">Precio a pagar</p>
+      <div class="price" id="precio">—</div>
+      <span class="tag par" id="tag"></span>
+      <div class="tw">
+        <table>
+          <thead><tr><th></th><th>Sin ISR</th><th>Con ISR 10%</th></tr></thead>
+          <tbody>
+            <tr><td>Cupón por periodo</td><td id="c-b"></td><td id="c-n"></td></tr>
+            <tr><td>Ingreso anual</td><td id="a-b"></td><td id="a-n"></td></tr>
+            <tr><td>Rendimiento sobre lo pagado</td><td id="r-b"></td><td id="r-n"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Los productos de inversión normalmente no pagan ISR, como los del Ministerio de Hacienda. Los dos escenarios se muestran para que compares.</p>
+      <p class="note" id="msg"></p>
+    </section>
+  </div>
+
+  <div class="how">
+    <div><h3>Fórmula simple</h3>
+      <p><code>Precio = valor nominal × tasa cupón ÷ tasa de rendimiento</code>. Si el rendimiento es menor que el cupón, pagas una prima. Si es mayor, compras con descuento.</p></div>
+    <div><h3>Fórmula completa</h3>
+      <p>Descuenta cada cupón y el valor nominal hasta la fecha de vencimiento. Es más cercana al precio de mercado y el resultado es aproximado.</p></div>
+  </div>
+
+  <aside class="disc-box" aria-label="Aviso importante">
+    <h2>Aviso importante</h2>
+    <p>Esta no es una calculadora oficial. Es una herramienta creada por un aficionado a las inversiones, con conocimientos adquiridos de forma empírica. Verifica siempre con tu corredor de bolsa que los datos calculados sean correctos antes de invertir. Los resultados son informativos y no constituyen asesoría financiera.</p>
+  </aside>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z"/></svg>Desarrollada con Claude Sonnet 5.5, modelo de IA de Anthropic.</span>
+    <a href="https://github.com/hernanreiq" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Idea y dirección: @hernanreiq</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var mode = "simple";
+  var nf = new Intl.NumberFormat("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
+  function money(v,s){ return s+" "+nf.format(v); }
+  function pct(v){ return nf.format(v)+"%"; }
+
+  function setMode(m){
+    mode = m;
+    $("b-simple").setAttribute("aria-pressed", m==="simple");
+    $("b-full").setAttribute("aria-pressed", m==="full");
+    $("vwrap").hidden = m!=="full";
+    $("fhint").textContent = m==="simple"
+      ? "Valor nominal × cupón ÷ rendimiento. No usa la fecha de vencimiento."
+      : "Descuenta cada cupón y el valor nominal hasta la fecha de vencimiento.";
+    calc();
+  }
+
+  function calc(){
+    var s = $("moneda").value;
+    var N = parseFloat($("nominal").value);
+    var c = parseFloat($("cupon").value)/100;
+    var y = parseFloat($("rend").value)/100;
+    var f = parseInt($("freq").value,10);
+    var msg = $("msg"); msg.className = "note"; msg.textContent = "";
+
+    var ok = N>0 && c>=0 && y>0;
+    var price = NaN;
+    if(!ok){
+      msg.className = "note err"; msg.textContent = "Escribe un valor nominal y una tasa de rendimiento mayores que cero.";
+    } else if(mode==="simple"){
+      price = N*c/y;
+    } else {
+      var d = $("venc").value;
+      var yrs = d ? (new Date(d+"T00:00:00") - new Date())/(365.25*864e5) : 0;
+      if(yrs<=0){
+        msg.className = "note err"; msg.textContent = "Elige una fecha de vencimiento futura.";
+      } else {
+        var n = yrs*f, i = y/f, cp = N*c/f;
+        price = cp*(1-Math.pow(1+i,-n))/i + N/Math.pow(1+i,n);
+        msg.textContent = "Precio aproximado. No incluye interés acumulado desde el último cupón.";
+      }
+    }
+
+    var good = isFinite(price);
+    $("precio").textContent = good ? money(price,s) : "—";
+    var tag = $("tag");
+    if(good){
+      var diff = price-N, p = diff/N*100;
+      if(Math.abs(diff)<0.005){ tag.className="tag par"; tag.textContent="A la par"; }
+      else if(diff<0){ tag.className="tag disc"; tag.textContent="Descuento de "+money(-diff,s)+" ("+pct(-p)+")"; }
+      else { tag.className="tag prem"; tag.textContent="Prima de "+money(diff,s)+" ("+pct(p)+")"; }
+      tag.hidden = false;
+    } else { tag.hidden = true; }
+
+    var cpB = ok ? N*c/f : NaN, anB = ok ? N*c : NaN;
+    function put(id,v,fmt){ $(id).textContent = isFinite(v) ? fmt(v) : "—"; }
+    var m = function(v){ return money(v,s); };
+    put("c-b",cpB,m); put("c-n",cpB*0.9,m);
+    put("a-b",anB,m); put("a-n",anB*0.9,m);
+    put("r-b", good ? anB/price*100 : NaN, pct);
+    put("r-n", good ? anB*0.9/price*100 : NaN, pct);
+  }
+
+  var t = new Date(); t.setFullYear(t.getFullYear()+5);
+  $("venc").value = t.toISOString().slice(0,10);
+  ["moneda","nominal","cupon","rend","freq","venc"].forEach(function(id){
+    $(id).addEventListener("input",calc); $(id).addEventListener("change",calc);
+  });
+  $("b-simple").addEventListener("click",function(){ setMode("simple"); });
+  $("b-full").addEventListener("click",function(){ setMode("full"); });
+  setMode("simple");
+})();
+</script>
+</body>
+</html>
